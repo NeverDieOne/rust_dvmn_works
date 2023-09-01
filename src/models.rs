@@ -21,7 +21,7 @@ impl Attempt {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Review {
     pub status: String,
-    pub new_attempts: Vec<Attempt>,
+    pub new_attempts: Option<Vec<Attempt>>,
     pub last_attempt_timestamp: Option<f32>,
     pub timestamp_to_request: Option<f32>,
 }

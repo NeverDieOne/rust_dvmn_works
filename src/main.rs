@@ -33,7 +33,7 @@ fn main() {
             .get(url)
             .header(AUTHORIZATION, format!("Token {}", devman_token))
             .query(&[("timestamp", timestamp)])
-            .timeout(Duration::from_secs(60))
+            .timeout(Duration::from_secs(100))
             .send()
             .expect("Не удалось отправить запрос")
             .error_for_status() {
@@ -58,16 +58,11 @@ fn main() {
         let review: models::Review = serde_json::from_str(&devman_response)
             .expect("Ошибка парсинга json");
         timestamp = review.get_timestamp();
-        match review.status.as_str() {
-            "found" => {
-                timestamp = review.last_attempt_timestamp
-                    .expect("Не удалось найти timestamp");
-                for attempt in review.new_attempts {
-                    let message = attempt.get_message();
-                    telegram_client.send_message(&chat_id, &message);
-                }
-            },
-            _ => continue
-        };
+        if let Some(new_attempts) = review.new_attempts {
+            for attempt in new_attempts {
+                let message = attempt.get_message();
+                telegram_client.send_message(&chat_id, &message);
+            }
+        }
     };
 }
