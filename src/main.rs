@@ -67,7 +67,7 @@ fn main() {
                     telegram_client.send_message(&chat_id, &message);
                 }
             },
-            &_ => continue
+            _ => continue
         };
     };
 }
