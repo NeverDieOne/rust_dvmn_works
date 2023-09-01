@@ -29,12 +29,8 @@ pub struct Review {
 
 impl Review {
     pub fn get_timestamp(&self) -> f32 {
-        if self.last_attempt_timestamp.is_some() {
-            self.last_attempt_timestamp.expect("Что-то пошло не так")
-        } else if self.timestamp_to_request.is_some() {
-            self.timestamp_to_request.expect("Что-то пошло не так")
-        } else {
-            0.0
-        }
+        self.last_attempt_timestamp.unwrap_or_else(
+            ||self.timestamp_to_request.unwrap()
+        )
     }
 }
