@@ -7,6 +7,7 @@ use dotenv::dotenv;
 use std::env;
 
 mod models;
+mod telegram;
 
 fn main() {
     env_logger::init();
@@ -23,7 +24,7 @@ fn main() {
         .duration_since(UNIX_EPOCH)
         .unwrap().as_secs_f32();
 
-    let telegram_url = format!("https://api.telegram.org/bot{}/sendMessage", telegram_bot_token);
+    let telegram_client = telegram::Telegram::new(&telegram_bot_token);
     let url = "https://dvmn.org/api/long_polling/";
     let client = Client::new();
 
@@ -56,34 +57,18 @@ fn main() {
     
         let review: models::Review = serde_json::from_str(&devman_response)
             .expect("Ошибка парсинга json");
-        
+        timestamp = review.get_timestamp();
         match review.status.as_str() {
             "found" => {
                 timestamp = review.last_attempt_timestamp
                     .expect("Не удалось найти timestamp");
                 for attempt in review.new_attempts {
-                    match client
-                        .get(&telegram_url)
-                        .query(&[("chat_id", &chat_id), ("text", &attempt.get_message())])
-                        .send()
-                        .expect("Не удалось сделать запрос")
-                        .error_for_status() {
-                            Ok(_) => info!("Сообщение отправлено"),
-                            Err(err) => warn!(
-                                "Не удалось отправить сообщение: {}",
-                                err.status().expect("Не удалось получить статус-код")
-                            )
-                        }
+                    let message = attempt.get_message();
+                    telegram_client.send_message(&chat_id, &message);
                 }
-            },
-            "timeout" => {
-                timestamp = review.timestamp_to_request
-                    .expect("Не удалось найти timestamp")
             },
             &_ => continue
         };
-
-        thread::sleep(Duration::from_secs(60));
     };
     
 }
