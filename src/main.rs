@@ -70,5 +70,4 @@ fn main() {
             &_ => continue
         };
     };
-    
 }
