@@ -62,16 +62,9 @@ fn main() {
                 timestamp = review.last_attempt_timestamp
                     .expect("Не удалось найти timestamp");
                 for attempt in review.new_attempts {
-                    let result_text = if attempt.is_negative {"Не принята"} else {"Принята"};
-                    
-                    let prepared_text: String = String::from(format!(
-                        "Работа {} \nСсылка на урок: {}\nУспешность: {}",
-                        attempt.lesson_title, attempt.lesson_url, result_text
-                    ));
-
                     match client
                         .get(&telegram_url)
-                        .query(&[("chat_id", &chat_id), ("text", &prepared_text)])
+                        .query(&[("chat_id", &chat_id), ("text", &attempt.get_message())])
                         .send()
                         .expect("Не удалось сделать запрос")
                         .error_for_status() {

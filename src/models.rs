@@ -7,6 +7,16 @@ pub struct Attempt {
     pub lesson_url: String
 }
 
+impl Attempt {
+    pub fn get_message(&self) -> String {
+        let result_text = if self.is_negative {"Не принята"} else {"Принята"};
+        return String::from(format!(
+            "Работа {} \nСсылка на урок: {}\nУспешность: {}",
+            self.lesson_title, self.lesson_url, result_text
+        ))
+    }
+}
+
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Review {
