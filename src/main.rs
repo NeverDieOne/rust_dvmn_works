@@ -5,9 +5,13 @@ use log::{info, warn, error};
 use env_logger;
 use dotenv::dotenv;
 use std::env;
+use crate::models::Review;
+use crate::telegram::Telegram;
+
 
 mod models;
 mod telegram;
+
 
 fn main() {
     env_logger::init();
@@ -24,7 +28,7 @@ fn main() {
         .duration_since(UNIX_EPOCH)
         .unwrap().as_secs_f32();
 
-    let telegram_client = telegram::Telegram::new(&telegram_bot_token);
+    let telegram_client = Telegram::new(&telegram_bot_token);
     let url = "https://dvmn.org/api/long_polling/";
     let client = Client::new();
 
@@ -55,7 +59,7 @@ fn main() {
             .text()
             .expect("Не удалось получить ответ");
     
-        let review: models::Review = serde_json::from_str(&devman_response)
+        let review: Review = serde_json::from_str(&devman_response)
             .expect("Ошибка парсинга json");
         timestamp = review.get_timestamp();
         if let Some(new_attempts) = review.new_attempts {
