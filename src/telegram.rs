@@ -2,6 +2,10 @@ use reqwest::blocking::Client;
 use log::warn;
 
 
+pub trait Messanger {
+    fn send_message(&self, chat_id: &str, text: &str);
+}
+
 pub struct Telegram {
     client: Client,
     url: String
@@ -15,8 +19,11 @@ impl Telegram {
             url: String::from(format!("https://api.telegram.org/bot{}", token))
         }
     }
+}
 
-    pub fn send_message(&self, chat_id: &str, text: &str) {
+
+impl Messanger for Telegram {
+    fn send_message(&self, chat_id: &str, text: &str) {
         let send_message_url = format!("{}/sendMessage", self.url);
         match self.client
             .get(&send_message_url)

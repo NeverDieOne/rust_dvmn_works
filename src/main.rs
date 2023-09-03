@@ -6,7 +6,7 @@ use env_logger;
 use dotenv::dotenv;
 use std::env;
 use crate::models::Review;
-use crate::telegram::Telegram;
+use crate::telegram::{Telegram, Messanger};
 
 
 mod models;
@@ -28,7 +28,7 @@ fn main() {
         .duration_since(UNIX_EPOCH)
         .unwrap().as_secs_f32();
 
-    let telegram_client = Telegram::new(&telegram_bot_token);
+    let messanger_client = Telegram::new(&telegram_bot_token);
     let url = "https://dvmn.org/api/long_polling/";
     let client = Client::new();
 
@@ -65,7 +65,7 @@ fn main() {
         if let Some(new_attempts) = review.new_attempts {
             for attempt in new_attempts {
                 let message = attempt.get_message();
-                telegram_client.send_message(&chat_id, &message);
+                messanger_client.send_message(&chat_id, &message);
             }
         }
     };
