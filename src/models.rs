@@ -34,3 +34,51 @@ impl Review {
         )
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn can_create_attempt() {
+        Attempt {
+            is_negative: true,
+            lesson_title: String::from("Делаю тестовый урок"),
+            lesson_url: String::from("Какой-то урл")
+        };
+    }
+
+    #[test]
+    fn cat_create_review() {
+        Review {
+            status: String::from("timeout"),
+            new_attempts: Option::from(Vec::from([])),
+            last_attempt_timestamp: Option::from(1.1),
+            timestamp_to_request: Option::from(1.1)
+        };
+    }
+
+    #[test]
+    #[should_panic]
+    fn one_of_timestamp_shoud_be() {
+        let review = Review {
+            status: String::from("timeout"),
+            new_attempts: Option::from(None),
+            last_attempt_timestamp: Option::from(None),
+            timestamp_to_request: Option::from(None)
+        };
+        review.get_timestamp();
+    }
+
+    #[test]
+    fn can_get_timestamp() {
+        let review = Review {
+            status: String::from("timeout"),
+            new_attempts: Option::from(None),
+            last_attempt_timestamp: Option::from(1.1),
+            timestamp_to_request: Option::from(None)
+        };
+        review.get_timestamp();
+    }
+}
